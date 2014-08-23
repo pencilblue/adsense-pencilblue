@@ -1,0 +1,40 @@
+{
+    "uid": "adsense-pencilblue",
+    "name": "Google Adsense Plugin",
+    "description": "Adds templates for Google Adsense ads.",
+    "version": "0.1.0",
+    "author": {
+        "name": "PencilBlue",
+        "email": "info@pencilblue.org",
+        "website": "http://pencilblue.org",
+        "contributors": [
+            {
+                "name": "Blake Callens",
+                "email": ""
+            },
+            {
+                "name": "Brian Hyder",
+                "email": ""
+            }
+        ]
+    },
+    "settings": [
+        {
+            "name": "ad_client_id",
+            "value": "ca-pub-1234567890"
+        }
+    ],
+    "permissions": {
+        "ACCESS_USER": [],
+        "ACCESS_WRITER": [],
+        "ACCESS_EDITOR": [],
+        "ACCESS_MANAGING_EDITOR": []
+    },
+    "main_module": {
+        "path": "adsense.js"
+    },
+    "theme": {
+        "settings": [],
+        "content_templates":[]
+    }
+}
