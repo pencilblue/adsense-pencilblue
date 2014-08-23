@@ -1,7 +1,7 @@
 {
     "uid": "adsense-pencilblue",
     "name": "Google Adsense Plugin",
-    "description": "Adds templates for Google Adsense ads.",
+    "description": "Adds directives for Google Adsense ads.",
     "version": "0.1.0",
     "author": {
         "name": "PencilBlue",
