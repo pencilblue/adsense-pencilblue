@@ -2,7 +2,8 @@
     "uid": "adsense-pencilblue",
     "name": "Google Adsense Plugin",
     "description": "Adds directives for Google Adsense ads.",
-    "version": "0.1.0",
+    "version": "0.2.0",
+    "pb_version": ">=0.4.x",
     "author": {
         "name": "PencilBlue",
         "email": "info@pencilblue.org",
@@ -21,7 +22,7 @@
     "settings": [
         {
             "name": "ad_client_id",
-            "value": "ca-pub-1234567890"
+            "value": ""
         }
     ],
     "permissions": {
