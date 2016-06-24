@@ -1,5 +1,5 @@
 /*
-    Copyright (C) 2015  PencilBlue, LLC
+    Copyright (C) 2016  PencilBlue, LLC
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -14,22 +14,36 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
+'use strict';
 
 module.exports = function(pb) {
     
     //pb dependencies
     var util            = pb.util;
     var BaseController  = pb.BaseController;
-    var PluginService   = pb.PluginService;
     var SecurityService = pb.SecurityService;
 
     /**
      *
-     * @class AdsenseRefresh
+     * @class AdsenseRefreshController
+     * @extends BaseController
      * @constructor
      */
-    function AdsenseRefresh(){}
-    util.inherits(AdsenseRefresh, BaseController);
+    function AdsenseRefreshController(){}
+    util.inherits(AdsenseRefreshController, BaseController);
+
+    /**
+     * @method initSync
+     * @param {object} context
+     */
+    AdsenseRefreshController.prototype.initSync = function(/*context*/) {
+
+        /**
+         * @property adSenseService
+         * @type {AdSenseService}
+         */
+        this.adSenseService = new AdSenseService(this.getServiceContext());
+    };
 
     /**
      * This is the function that will be called by the system's RequestHandler.  It
@@ -39,46 +53,20 @@ module.exports = function(pb) {
      *
      * @method render
      * @see BaseController#render
-     * @param cb The callback.  It does not require a an error parameter.  All
+     * @param {function} cb The callback.  It does not require a an error parameter.  All
      * errors should be handled by the controller and format the appropriate
      *  response.  The system will attempt to catch any catastrophic errors but
      *  makes no guarantees.
      */
-    AdsenseRefresh.prototype.render = function(cb) {
+    AdsenseRefreshController.prototype.render = function(cb) {
         var self = this;
-        var cos = new pb.CustomObjectService();
 
-        cos.loadTypeByName('adsense_ad', function(err, adsenseAdType) {
-            cos.findByType(adsenseAdType, null, function(err, adsenseAds) {
-                for(var i = 0; i < adsenseAds.length; i++) {
-                    self.setGlobal(adsenseAds[i]);
-                }
-
-                self.session.success = self.ls.get('ADSENSE_REFRESHED');
-                self.redirect('/admin/plugins/settings/adsense-pencilblue', cb);
-            });
-        });
-    };
-
-    //TODO remove this duplicate code
-    //TODO speed this up so it doesn't make multiple DB calls on EVERY request
-    AdsenseRefresh.prototype.setGlobal = function(adsenseAd) {
-        pb.TemplateService.registerGlobal('adsense_' + adsenseAd.name, function(flag, cb) {
-            
-            var pluginService = new PluginService();
-            pluginService.getSetting('ad_client_id', 'adsense', function(err, adClientId) {
-                var adName = flag.split('adsense_').join('');
-                cos.loadTypeByName('adsense_ad', function(err, adsenseAdType) {
-                    cos.findByType(adsenseAdType, {name: adName}, function(err, adsenseAds) {
-                        if(!adsenseAds.length) {
-                            return cb(err, '');
-                        }
-
-                        var adsenseAd = adsenseAds[0];
-                        cb(err, new pb.TemplateValue('<script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script><ins class="adsbygoogle" style="display:block" data-ad-client="' + adClientId + '" data-ad-slot="' + adsenseAd.ad_id + '" data-ad-format="auto"></ins><script>(adsbygoogle = window.adsbygoogle || []).push({});</script>', false));
-                    });
-                });
-            });
+        this.adSenseService.registerGlobals(function(err) {
+            if (util.isError(err)) {
+                return cb(err);
+            }
+            self.session.success = self.ls.g('ADSENSE_REFRESHED');
+            self.redirect('/admin/plugins/settings/adsense-pencilblue', cb);
         });
     };
 
@@ -94,7 +82,7 @@ module.exports = function(pb) {
      *
      * @param cb A callback of the form: cb(error, array of objects)
      */
-    AdsenseRefresh.getRoutes = function(cb) {
+    AdsenseRefreshController.getRoutes = function(cb) {
         var routes = [
             {
                 method: 'get',
@@ -108,5 +96,5 @@ module.exports = function(pb) {
     };
 
     //exports
-    return AdsenseRefresh;
+    return AdsenseRefreshController;
 };
