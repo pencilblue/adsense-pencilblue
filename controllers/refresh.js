@@ -22,6 +22,7 @@ module.exports = function(pb) {
     var util            = pb.util;
     var BaseController  = pb.BaseController;
     var SecurityService = pb.SecurityService;
+    var PluginService = pb.PluginService;
 
     /**
      *
@@ -37,6 +38,7 @@ module.exports = function(pb) {
      * @param {object} context
      */
     AdsenseRefreshController.prototype.initSync = function(/*context*/) {
+        var AdSenseService = PluginService.getService('AdSenseService', 'adsense-pencilblue', this.site);
 
         /**
          * @property adSenseService
@@ -66,7 +68,7 @@ module.exports = function(pb) {
                 return cb(err);
             }
             self.session.success = self.ls.g('ADSENSE_REFRESHED');
-            self.redirect('/admin/plugins/settings/adsense-pencilblue', cb);
+            self.redirect('/admin/plugins/adsense-pencilblue/settings', cb);
         });
     };
 

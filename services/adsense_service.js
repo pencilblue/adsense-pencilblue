@@ -168,14 +168,14 @@ module.exports = function(pb) {
      * @param {string} adsenseAdTypeId
      */
     AdSenseService.registerAdminSubNav = function(adsenseAdTypeId) {
-        AdminSubnavService.registerFor('plugin_settings', function(navKey, localization, plugin) {
-            if(plugin.uid === 'adsense-pencilblue') {
+        AdminSubnavService.registerFor('plugin_settings', function(navKey, localization, data) {
+            if(data.plugin.uid === 'adsense-pencilblue') {
                 return [
                     {
                         name: 'ads',
                         title: 'Manage Ads',
                         icon: 'bookmark',
-                        href: '/admin/content/custom_objects/manage_objects/' + adsenseAdTypeId
+                        href: '/admin/content/objects/' + adsenseAdTypeId
                     },
                     {
                         name: 'refresh',
@@ -188,6 +188,36 @@ module.exports = function(pb) {
             return [];
         });
     };
+
+    /**
+     * This function is called when the service is being setup by the system.  It is
+     * responsible for any setup that is needed when first created.  The services
+     * are all instantiated at once and are not added to the platform until all
+     * initialization is complete.  Relying on other plugin services in the
+     * initialization could result in failure.
+     * @static
+     * @method init
+     * @param {function} cb (Error|null) A callback that should provide one argument
+     */
+    AdSenseService.init = function(cb) {
+        pb.log.debug("AdSenseService: Initialized");
+        cb(null, true);
+    };
+
+    /**
+     * A service interface function designed to allow developers to name the handle
+     * to the service object what ever they desire. The function must return a
+     * valid string and must not conflict with the names of other services for the
+     * plugin that the service is associated with.
+     *
+     * @static
+     * @method getName
+     * @return {String} The service name
+     */
+    AdSenseService.getName = function() {
+        return 'AdSenseService';
+    };
+
 
     return AdSenseService;
 };

@@ -16,18 +16,29 @@
 */
 'use strict';
 
+//dependencies
+var async = require('async');
+var path = require('path');
+
 module.exports = function(pb) {
     
     //pb dependencies
     var util = pb.util;
     var DAO = pb.DAO;
+    var PluginServiceLoader = pb.PluginServiceLoader;
 
     /**
-     * Adsense - Display Adsense ads on your site.
+     * AdSense - Display Adsense ads on your site.
      * @class Adsense
      * @constructor
      */
     function Adsense(){}
+
+    var UID = 'adsense-pencilblue';
+
+    var SERVICE_FILENAME = 'adsense_service.js';
+
+    var pluginServiceLoader = new PluginServiceLoader({pluginUid: UID});
 
     /**
      * Called when the application is being installed for the first time.
@@ -40,9 +51,19 @@ module.exports = function(pb) {
      */
     Adsense.onInstallWithContext = function(context, cb) {
         
-        //TODO load service
-        var service = new AdSenseService({site: context.site, onlyThisSite: true});
-        service.createObjectsForInstall(cb);
+        var absolutePath = path.join(PluginServiceLoader.getPathToServices(UID), SERVICE_FILENAME);
+        var tasks = [
+
+            //load the service
+            util.wrapTask(pluginServiceLoader, pluginServiceLoader.get, [absolutePath]),
+
+            //register ad placements
+            function(serviceLoaderWrapper, callback) {
+                var service = new serviceLoaderWrapper.data({site: context.site, onlyThisSite: true});
+                service.createObjectsForInstall(callback);
+            }
+        ];
+        async.waterfall(tasks, cb);
     };
 
     /**
@@ -73,16 +94,26 @@ module.exports = function(pb) {
      */
     Adsense.onStartupWithContext = function(context, cb) {
 
-        //TODO load service dummy
-        var service = new AdSenseService({site: context.site, onlyThisSite: true});
-        service.registerGlobals(function(err, adSenseAdType) {
-            if (util.isError(err)) {
-                return cb(err);
-            }
+        var AdSenseService = null;
+        var absolutePath = path.join(PluginServiceLoader.getPathToServices(UID), SERVICE_FILENAME);
+        var tasks = [
 
-            //register admin sub nav
-            AdSenseService.registerAdminSubNav(adSenseAdType[DAO.getIdField()].toString());
-        });
+            //load the service
+            util.wrapTask(pluginServiceLoader, pluginServiceLoader.get, [absolutePath]),
+
+            //register ad placements
+           function(serviceLoaderWrapper, callback) {
+               AdSenseService = serviceLoaderWrapper.data;
+               var service = new AdSenseService({site: context.site, onlyThisSite: true});
+               service.registerGlobals(callback);
+           },
+
+            function(adSenseAdType, callback) {
+                AdSenseService.registerAdminSubNav(adSenseAdType[DAO.getIdField()].toString());
+                callback(null, true);
+            }
+        ];
+        async.waterfall(tasks, cb);
     };
 
     /**
