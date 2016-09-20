@@ -2,7 +2,7 @@
     "uid": "adsense-pencilblue",
     "name": "Google Adsense Plugin",
     "description": "Adds directives for Google Adsense ads.",
-    "version": "0.2.1",
+    "version": "0.2.2",
     "pb_version": ">=0.5.x <1.x",
     "author": {
         "name": "PencilBlue",
@@ -33,5 +33,8 @@
     },
     "main_module": {
         "path": "adsense.js"
+    },
+    "dependencies": {
+        "async": "^1.5.2"
     }
 }

@@ -55,7 +55,7 @@ module.exports = function(pb) {
         var tasks = [
 
             //load the service
-            util.wrapTask(pluginServiceLoader, pluginServiceLoader.get, [absolutePath]),
+            util.wrapTask(pluginServiceLoader, pluginServiceLoader.get, [absolutePath, {}]),
 
             //register ad placements
             function(serviceLoaderWrapper, callback) {
@@ -99,7 +99,7 @@ module.exports = function(pb) {
         var tasks = [
 
             //load the service
-            util.wrapTask(pluginServiceLoader, pluginServiceLoader.get, [absolutePath]),
+            util.wrapTask(pluginServiceLoader, pluginServiceLoader.get, [absolutePath, {}]),
 
             //register ad placements
            function(serviceLoaderWrapper, callback) {
